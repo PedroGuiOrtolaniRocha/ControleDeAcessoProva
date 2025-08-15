@@ -1,34 +1,38 @@
 import DataHandler
 import os
+import asyncio
 from model_morador import Morador
 
 dt_handler = DataHandler.DataHandler("PREDIO.db")
 
-def cadastro_morador():
+async def cadastro_morador():
     nome = input("Nome do morador: ")
     bloco = input("Bloco do morador: ")
     ap = int(input("Número do apartamento: "))
     senha = input("Senha do morador: ")
     morador = Morador(nome, bloco, ap, senha)
-    dt_handler.insert_morador(morador)
+    await dt_handler.insert_morador(morador)
     print("Morador cadastrado com sucesso!")
 
-def listar_moradores():
-    moradores = dt_handler.get_moradores()
+async def listar_moradores():
+    moradores = await dt_handler.get_moradores()
     if not moradores:
         print("Nenhum morador cadastrado.")
     else:
         print("Moradores cadastrados:")
         for morador in moradores:
-            print(f"ID: {morador.id}, Nome: {morador.nome}, Bloco: {morador.bloco}, Ap: {morador.ap}")
+            print(f"ID: {morador.id}, \nNome: {morador.nome}, \nBloco: {morador.bloco}, \nAp: {morador.ap}, \nEm casa: {morador.em_casa}, \nData de entrada: {morador.data_entrada}, \nData de saída: {morador.data_saida}, \nData de cadastro: {morador.data_cadastro}\n\n")
 
-def get_morador():
+async def get_morador():
+
     id = input("ID do morador: ")
-    morador = dt_handler.get_morador(id)
+    morador = await dt_handler.get_morador(id)
+
     if morador is None:
         print("Morador não encontrado.")
+
     else:
-        print(f"ID: {morador.id}, Nome: {morador.nome}, Bloco: {morador.bloco}, Ap: {morador.ap}")
+        print(f"ID: {morador.id}, \nNome: {morador.nome}, \nBloco: {morador.bloco}, \nAp: {morador.ap}, \nEm casa: {morador.em_casa}, \nData de entrada: {morador.data_entrada}, \nData de saída: {morador.data_saida}, \nData de cadastro: {morador.data_cadastro}\n\n")
 
 def menu():
     while True:
@@ -42,11 +46,11 @@ def menu():
         os.system('cls' if os.name == 'nt' else 'clear')
 
         if opcao == "1":
-            cadastro_morador()
+            asyncio.run(cadastro_morador())
         elif opcao == "2":
-            listar_moradores()
+            asyncio.run(listar_moradores())
         elif opcao == "3":
-            get_morador()
+            asyncio.run(get_morador())
         elif opcao == "4":
             dt_handler.close_connection()
             print("Saindo...")
