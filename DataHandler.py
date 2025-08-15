@@ -1,5 +1,5 @@
 import sqlite3
-import Morador
+from model_morador import Morador
 
 class DataHandler:
 
@@ -26,19 +26,53 @@ class DataHandler:
         
         self.connection.commit()
 
-    def insert_morador(self, morador: Morador):
+    async def insert_morador_async(self, morador: Morador) -> None:
         self.cursor.execute("INSERT INTO moradores (nome, bloco, ap, senha) VALUES (?, ?, ?, ?)", (morador.nome , morador.bloco, morador.ap, morador.senha))
         self.connection.commit()
     
-    def fetch_moradores(self):
-        self.cursor.execute("SELECT * FROM moradores")
-        return self.cursor.fetchall()
+    def insert_morador(self, morador: Morador) -> None:
+        self.cursor.execute("INSERT INTO moradores (nome, bloco, ap, senha) VALUES (?, ?, ?, ?)", (morador.nome , morador.bloco, morador.ap, morador.senha))
+        self.connection.commit()
+
+    async def get_moradores_async(self) -> list [Morador]:
+        response = self.cursor.execute("SELECT * FROM moradores").fetchall()
+
+        moradores = []
+        for m in response:
+            moradores.append(Morador(m[1], m[2], m[3], m[4], m[0]))
+        
+        return moradores 
     
-    def insert_visita(self, nome: str, data: str):
+    def get_moradores(self) -> list [Morador]:
+        response = self.cursor.execute("SELECT * FROM moradores").fetchall()
+
+        moradores = []
+        for m in response:
+            moradores.append(Morador(m[1], m[2], m[3], m[4], m[0]))
+        
+        return moradores 
+    
+    def get_morador(self, id: str) -> Morador:
+        response = self.cursor.execute("SELECT * FROM moradores WHERE id = ?", (id)).fetchone()
+        
+        if response is None:
+            return None
+        
+        return Morador(response[1], response[2], response[3], response[4], response[0]) 
+    
+    async def get_morador_async(self, id: str) -> Morador:
+        response = self.cursor.execute("SELECT * FROM moradores WHERE id = ?", (id)).fetchone()
+        
+        if response is None:
+            return None
+        
+        return Morador(response[1], response[2], response[3], response[4], response[0]) 
+    
+    async def insert_visita(self, nome: str, data: str):
         self.cursor.execute("INSERT INTO visitas (nome, data) VALUES (?, ?)", (nome, data))
         self.connection.commit()
 
-    def fetch_visitas(self):
+    async def get_visitas(self):
         self.cursor.execute("SELECT * FROM visitas")
         return self.cursor.fetchall()
 
